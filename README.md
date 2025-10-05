@@ -69,7 +69,7 @@ lib/
 Clone the repository:
 ```bash
 git clone https://github.com/rezvanmj/ober_task1.git
-cd vidavo
+cd task1
 ```
 x
 Install dependencies:
