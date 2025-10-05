@@ -1,16 +1,85 @@
-# task1
+# Ober task1
 
-A new Flutter project.
+A Flutter test project
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project demonstrates:
+- Selecting source and destination.
+- Measuring Distance and Fare between them.
+- Get Source and Destination addresses.
 
-A few resources to get you started if this is your first Flutter project:
+The project leverages **GetX** for state management and **Clean Architecture** .
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features and Packages
+
+### measuring distance and address 
+- This feature uses Flutter with GetX for state management, flutter_map and latlong2 for map rendering and geographic calculations, and geolocator for obtaining the device’s current location.
+- Distance between the selected points is calculated using latlong2 utilities, while **OSRM (Open Source Routing Machine) API** is used to fetch the route. Reverse geocoding to get human-readable addresses is handled via HTTP requests to appropriate services. This combination ensures accurate distance measurement, route drawing, and address retrieval for pickup and drop-off points.
+
+### State Management
+- Managed with `GetX`, enabling reactive and predictable state updates .
+
+### flutter map
+- showing map to user , showing marker layer and TileLayer `flutter_map`.
+
+### lat long
+- used for geographic calculations and handling latitude/longitude points. `latlong2`.
+
+### geolocator
+- package for working with the device’s location and getting current location `geolocator`.
+
+### http
+- Dart/Flutter package for making network requests `http`. 
+
+
+
+---
+
+
+## Value Equality & Functional Programming
+
+- **equatable** → Simplifies value comparisons in BLoC states.
+- **dartz** → Provides functional programming constructs like `Either` and `Option`.
+
+---
+
+## Project Structure
+
+```
+lib/
+├── main.dart                  # Entry point
+├── core/                      # Constants, utilities, and shared widgets
+├── feature/
+│   └── map_feature/
+│       ├── data/              # JSON form data and models
+│       ├── domain/            # Entities and repository interfaces
+│       └── presentation/
+│           ├── manager/       # GetX and state management
+│           └── pages/         # UI screens
+
+```
+
+---
+
+## Installation
+
+Clone the repository:
+```bash
+git clone https://github.com/rezvanmj/ober_task1.git
+cd vidavo
+```
+x
+Install dependencies:
+```bash
+flutter pub get
+```
+
+Run the project:
+```bash
+flutter run
+```
+
+---
