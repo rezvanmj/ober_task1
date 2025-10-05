@@ -17,7 +17,7 @@ The project leverages **GetX** for state management and **Clean Architecture** .
 
 ### measuring distance and address 
 - This feature uses Flutter with GetX for state management, flutter_map and latlong2 for map rendering and geographic calculations, and geolocator for obtaining the device’s current location.
-- Distance between the selected points is calculated using latlong2 utilities, while **OSRM (Open Source Routing Machine) API** is used to fetch the route. Reverse geocoding to get human-readable addresses is handled via HTTP requests to appropriate services. This combination ensures accurate distance measurement, route drawing, and address retrieval for pickup and drop-off points.
+- Distance between the selected points is calculated using latlong2 utilities, while **OSRM (Open Source Routing Machine) API with user-agent : flutter_map_app** is used to fetch the route. Reverse geocoding to get human-readable addresses is handled via HTTP requests to appropriate services. This combination ensures accurate distance measurement, route drawing, and address retrieval for pickup and drop-off points.
 
 ### State Management
 - Managed with `GetX`, enabling reactive and predictable state updates .
@@ -32,8 +32,8 @@ The project leverages **GetX** for state management and **Clean Architecture** .
 - package for working with the device’s location and getting current location `geolocator`.
 
 ### http
-- Dart/Flutter package for making network requests `http`. 
-
+- Dart/Flutter package for making network requests `http`.
+- We could use Dio, Equatable, and Dartz packages for handling network requests, state comparison, and functional error handling, but due to a tight deadline, I preferred using the simpler http package.
 
 
 ---
