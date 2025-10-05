@@ -14,9 +14,13 @@ class MapPageController extends GetxController {
   var currentLocation = Rxn<LatLng>();
   var startPoint = Rxn<LatLng>();
   var endPoint = Rxn<LatLng>();
+  RxString sourceAddress = ''.obs;
+  RxString destinationAddress = ''.obs;
   var routePoints = <LatLng>[].obs;
   var selectMode = SelectMode.selectingStart.obs;
   final Distance _distance = Distance();
+  RxBool isLoading = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -72,6 +76,7 @@ class MapPageController extends GetxController {
     mapController.move(currentLatLng, 15);
   }
 
+  // i could use DIO package for API service and DARTZ and EQUITABLE packages for error handling
   Future<void> getRoute() async {
     if (startPoint.value != null && endPoint.value != null) {
       final url =
@@ -86,5 +91,30 @@ class MapPageController extends GetxController {
             .toList();
       }
     }
+  }
+
+  Future<void> getAddresses() async {
+    isLoading.value = true;
+    sourceAddress.value =
+        await getAddressFromLatLng(startPoint.value ?? LatLng(0.0, 0.0)) ?? '';
+    destinationAddress.value =
+        await getAddressFromLatLng(endPoint.value ?? LatLng(0.0, 0.0)) ?? '';
+    isLoading.value = false;
+  }
+
+  // i could use DIO package for API service and DARTZ and EQUITABLE packages for error handling
+  Future<String?> getAddressFromLatLng(LatLng point) async {
+    final url =
+        'https://nominatim.openstreetmap.org/reverse?lat=${point.latitude}&lon=${point.longitude}&format=json';
+
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {"User-Agent": "flutter_map_app"},
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['display_name'];
+    }
+    return null;
   }
 }

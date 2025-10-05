@@ -13,23 +13,21 @@ class MapPage extends GetView<MapPageController> {
     return Obx(
       () => Center(
         child: Scaffold(
-          body: SafeArea(
-            child: Stack(
-              children: [
-                _map(),
-                Positioned(
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                  child:
-                      (controller.endPoint.value != null &&
-                          controller.startPoint.value != null)
-                      ? _distance(context)
-                      : _selectLocationButton(),
-                ),
-                _currentLocationButton(),
-              ],
-            ),
+          body: Stack(
+            children: [
+              _map(),
+              Positioned(
+                bottom: 20,
+                left: 20,
+                right: 20,
+                child:
+                    (controller.endPoint.value != null &&
+                        controller.startPoint.value != null)
+                    ? _distance(context)
+                    : SafeArea(child: _selectLocationButton()),
+              ),
+              _currentLocationButton(),
+            ],
           ),
           // floatingActionButton:,
         ),
@@ -42,17 +40,19 @@ class MapPage extends GetView<MapPageController> {
       alignment: Alignment.topRight,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: FloatingActionButton(
-          mini: true,
-          backgroundColor: Colors.lightGreen,
-          onPressed: controller.determinePosition,
-          child: const Icon(Icons.gps_fixed_outlined, color: Colors.white),
+        child: SafeArea(
+          child: FloatingActionButton(
+            mini: true,
+            backgroundColor: Colors.lightGreen,
+            onPressed: controller.determinePosition,
+            child: const Icon(Icons.gps_fixed_outlined, color: Colors.white),
+          ),
         ),
       ),
     );
   }
 
-  FilledButton _selectLocationButton() {
+  Widget _selectLocationButton() {
     return FilledButton(
       style: FilledButton.styleFrom(
         backgroundColor: Colors.green,
@@ -80,13 +80,15 @@ class MapPage extends GetView<MapPageController> {
       final distance = controller.getDistanceInKm();
       if (distance == null) return const SizedBox.shrink();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _tripDetail(distance),
-          const SizedBox(height: 10),
-          _button(context),
-        ],
+      return SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _tripDetail(distance),
+            const SizedBox(height: 10),
+            _button(context),
+          ],
+        ),
       );
     });
   }
@@ -95,41 +97,100 @@ class MapPage extends GetView<MapPageController> {
     return Row(
       children: [
         Expanded(
-          child: FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.green,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              showDialog(
-                context: Get.context ?? context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Request Trip'),
-                  content: const Text('Trip accepted successfully'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        controller.startSelectingPoints();
-                      },
-                      child: const Text('Ok'),
-                    ),
-                  ],
+          child: IgnorePointer(
+            ignoring: controller.isLoading.value,
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              );
-            },
-            child: const Text('Request Trip'),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () async {
+                await _showAddresses(context);
+              },
+              child: controller.isLoading.value
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Request Trip'),
+                        SizedBox(width: 5),
+                        SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
+                      ],
+                    )
+                  : Text('Request Trip'),
+            ),
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _showAddresses(BuildContext context) async {
+    await controller.getAddresses().then((value) {
+      showDialog(
+        context: Get.context ?? context,
+        builder: (context) => Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Trip Requested Successfully',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                SizedBox(height: 40),
+                Wrap(
+                  children: [
+                    Text(
+                      'Source Address : ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(controller.sourceAddress.value),
+                  ],
+                ),
+
+                SizedBox(height: 20),
+                Wrap(
+                  children: [
+                    Text(
+                      'Destination Address : ',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(controller.destinationAddress.value),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      controller.startSelectingPoints();
+                    },
+                    child: Text('OK'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget _tripDetail(double distance) {
@@ -188,16 +249,22 @@ class MapPage extends GetView<MapPageController> {
               if (controller.startPoint.value != null)
                 Marker(
                   point: controller.startPoint.value!,
-                  width: 50,
-                  height: 50,
-                  child: const Icon(Icons.flag, color: Colors.green),
+                  width: 70,
+                  height: 70,
+                  child: const Icon(
+                    Icons.location_history,
+                    color: Colors.black,
+                  ),
                 ),
               if (controller.endPoint.value != null)
                 Marker(
                   point: controller.endPoint.value!,
-                  width: 50,
-                  height: 50,
-                  child: const Icon(Icons.flag, color: Colors.blue),
+                  width: 70,
+                  height: 70,
+                  child: const Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.black87,
+                  ),
                 ),
             ],
           ),
