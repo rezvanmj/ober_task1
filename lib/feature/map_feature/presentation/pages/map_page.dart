@@ -65,7 +65,7 @@ class MapPage extends GetView<MapPageController> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(vertical: 14),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        textStyle: Theme.of(context).textTheme.bodyLarge,
       ),
       onPressed: () {
         if (controller.startPoint.value == null &&
@@ -113,10 +113,7 @@ class MapPage extends GetView<MapPageController> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                textStyle: Theme.of(context).textTheme.bodyLarge,
               ),
               onPressed: () async {
                 await _showAddresses(context);
@@ -155,9 +152,7 @@ class MapPage extends GetView<MapPageController> {
               children: [
                 Text(
                   'Trip Requested Successfully',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
@@ -166,7 +161,9 @@ class MapPage extends GetView<MapPageController> {
                   children: [
                     Text(
                       'Source Address : ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(controller.sourceAddress.value),
                   ],
@@ -177,7 +174,9 @@ class MapPage extends GetView<MapPageController> {
                   children: [
                     Text(
                       'Destination Address : ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(controller.destinationAddress.value),
                   ],
@@ -214,12 +213,12 @@ class MapPage extends GetView<MapPageController> {
           Text(
             'Distance:${distance.toStringAsFixed(2)}Km',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
           Text(
             'Fare: ${distance.toInt()} €',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
       ),
