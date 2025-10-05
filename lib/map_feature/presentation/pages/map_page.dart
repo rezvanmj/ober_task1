@@ -149,7 +149,7 @@ class MapPage extends GetView<MapPageController> {
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           Text(
-            'Fare: ${gidistance.toInt()} €',
+            'Fare: ${distance.toInt()} €',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
