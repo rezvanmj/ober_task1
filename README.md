@@ -39,13 +39,6 @@ The project leverages **GetX** for state management and **Clean Architecture** .
 ---
 
 
-## Value Equality & Functional Programming
-
-- **equatable** → Simplifies value comparisons in BLoC states.
-- **dartz** → Provides functional programming constructs like `Either` and `Option`.
-
----
-
 ## Project Structure
 
 ```
