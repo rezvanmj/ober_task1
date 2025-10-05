@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 
+import '../../../../core/widgets/app_space.dart';
 import '../manager/map_page_controller.dart';
+import '../widgets/map_widget.dart';
 
 class MapPage extends GetView<MapPageController> {
   const MapPage({super.key});
@@ -15,18 +15,9 @@ class MapPage extends GetView<MapPageController> {
         child: Scaffold(
           body: Stack(
             children: [
-              _map(),
-              Positioned(
-                bottom: 20,
-                left: 20,
-                right: 20,
-                child:
-                    (controller.endPoint.value != null &&
-                        controller.startPoint.value != null)
-                    ? _distance(context)
-                    : SafeArea(child: _selectLocationButton()),
-              ),
-              _currentLocationButton(),
+              MapWidget(),
+              _selectButton(context),
+              _currentLocationButton(context),
             ],
           ),
           // floatingActionButton:,
@@ -35,7 +26,20 @@ class MapPage extends GetView<MapPageController> {
     );
   }
 
-  Align _currentLocationButton() {
+  Widget _selectButton(BuildContext context) {
+    return Positioned(
+      bottom: 20,
+      left: 20,
+      right: 20,
+      child:
+          (controller.endPoint.value != null &&
+              controller.startPoint.value != null)
+          ? _distance(context)
+          : SafeArea(child: _selectLocationButton(context)),
+    );
+  }
+
+  Align _currentLocationButton(BuildContext context) {
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
@@ -43,19 +47,22 @@ class MapPage extends GetView<MapPageController> {
         child: SafeArea(
           child: FloatingActionButton(
             mini: true,
-            backgroundColor: Colors.lightGreen,
+            backgroundColor: Theme.of(context).colorScheme.primary,
             onPressed: controller.determinePosition,
-            child: const Icon(Icons.gps_fixed_outlined, color: Colors.white),
+            child: Icon(
+              Icons.gps_fixed_outlined,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _selectLocationButton() {
+  Widget _selectLocationButton(BuildContext context) {
     return FilledButton(
       style: FilledButton.styleFrom(
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -84,8 +91,8 @@ class MapPage extends GetView<MapPageController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _tripDetail(distance),
-            const SizedBox(height: 10),
+            _tripDetail(distance, context),
+            AppSpace(height: 10),
             _button(context),
           ],
         ),
@@ -101,7 +108,7 @@ class MapPage extends GetView<MapPageController> {
             ignoring: controller.isLoading.value,
             child: FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -119,7 +126,7 @@ class MapPage extends GetView<MapPageController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Request Trip'),
-                        SizedBox(width: 5),
+                        AppSpace(width: 5),
                         SizedBox(
                           height: 20,
                           width: 20,
@@ -151,10 +158,10 @@ class MapPage extends GetView<MapPageController> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                SizedBox(height: 40),
+                AppSpace(height: 40),
                 Wrap(
                   children: [
                     Text(
@@ -165,7 +172,7 @@ class MapPage extends GetView<MapPageController> {
                   ],
                 ),
 
-                SizedBox(height: 20),
+                AppSpace(height: 20),
                 Wrap(
                   children: [
                     Text(
@@ -193,11 +200,11 @@ class MapPage extends GetView<MapPageController> {
     });
   }
 
-  Widget _tripDetail(double distance) {
+  Widget _tripDetail(double distance, BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
       ),
@@ -214,70 +221,6 @@ class MapPage extends GetView<MapPageController> {
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
-    );
-  }
-
-  Obx _map() {
-    return Obx(
-      () => FlutterMap(
-        mapController: controller.mapController,
-        options: MapOptions(
-          initialCenter: LatLng(51.5, -0.09),
-          initialZoom: 13,
-          onTap: (tapPos, point) => controller.onMapTapped(point),
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: const ['a', 'b', 'c'],
-            userAgentPackageName: 'com.example.map_sample_app',
-          ),
-          MarkerLayer(
-            markers: [
-              Marker(
-                width: 80,
-                height: 80,
-                point: controller.currentLocation.value ?? LatLng(51.5, -0.09),
-                child: const Icon(
-                  Icons.location_pin,
-                  color: Colors.red,
-                  size: 40,
-                ),
-              ),
-              if (controller.startPoint.value != null)
-                Marker(
-                  point: controller.startPoint.value!,
-                  width: 70,
-                  height: 70,
-                  child: const Icon(
-                    Icons.location_history,
-                    color: Colors.black,
-                  ),
-                ),
-              if (controller.endPoint.value != null)
-                Marker(
-                  point: controller.endPoint.value!,
-                  width: 70,
-                  height: 70,
-                  child: const Icon(
-                    Icons.location_on_rounded,
-                    color: Colors.black87,
-                  ),
-                ),
-            ],
-          ),
-          if (controller.routePoints.isNotEmpty)
-            PolylineLayer(
-              polylines: [
-                Polyline(
-                  points: controller.routePoints,
-                  strokeWidth: 4,
-                  color: Colors.blue,
-                ),
-              ],
-            ),
         ],
       ),
     );

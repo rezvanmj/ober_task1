@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 
-enum SelectMode { none, selectingStart, selectingEnd }
+import '../../../../core/constants/app_enum.dart';
 
 class MapPageController extends GetxController {
   final mapController = MapController();
